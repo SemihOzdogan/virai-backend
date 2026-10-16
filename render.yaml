@@ -37,7 +37,9 @@ services:
     name: virai-ollama
     runtime: docker
     region: frankfurt
-    plan: 1c-4g
+    # Private services do not offer a 1 CPU / 4 GB plan. This is the
+    # corresponding valid 4 GB private-service plan.
+    plan: 2c-4g
     dockerfilePath: ./render/ollama.Dockerfile
     dockerContext: .
     disk:
