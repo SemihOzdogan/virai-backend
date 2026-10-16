@@ -18,7 +18,7 @@ const app = Fastify({ logger: true });
 const credentials = z.object({ email: z.string().email().transform(v => v.toLowerCase().trim()), password: z.string().min(12).max(128) });
 const uuid = z.string().uuid();
 const maxUploadBytes = 10 * 1024 * 1024;
-const uploadDirectory = '/app/data/uploads';
+const uploadDirectory = config.UPLOAD_DIRECTORY;
 await app.register(cors, { origin: config.CORS_ORIGIN ?? false });
 await app.register(jwt, { secret: config.JWT_SECRET });
 await app.register(multipart, { limits: { files: 1, fileSize: maxUploadBytes, fields: 0, parts: 1 } });

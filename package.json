@@ -8,7 +8,9 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "db:migrate": "tsx src/db/migrate.ts"
+    "db:migrate": "tsx src/db/migrate.ts",
+    "local:up": "docker compose up --build -d",
+    "local:down": "docker compose down"
   },
   "dependencies": {
     "@fastify/cors": "^11.0.0",

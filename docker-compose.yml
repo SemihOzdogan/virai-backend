@@ -22,13 +22,42 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       HOST: 0.0.0.0
+      OLLAMA_BASE_URL: http://ollama:11434
+      DATA_DIR: /app/data
     depends_on:
       db:
         condition: service_healthy
+      ollama-init:
+        condition: service_completed_successfully
     volumes:
       - uploads-data:/app/data
     ports:
       - "${PORT:-4300}:4300"
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - ollama-data:/root/.ollama
+    ports:
+      - "127.0.0.1:11434:11434"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+  ollama-init:
+    image: ollama/ollama:latest
+    restart: "no"
+    environment:
+      OLLAMA_HOST: ollama:11434
+      OLLAMA_CHAT_MODEL: ${OLLAMA_CHAT_MODEL:-qwen2.5:7b}
+      OLLAMA_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL:-embeddinggemma-2:270m}
+    depends_on:
+      ollama:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command: "ollama pull $$OLLAMA_CHAT_MODEL && ollama pull $$OLLAMA_EMBEDDING_MODEL"
 volumes:
   postgres-data:
   uploads-data:
+  ollama-data:
